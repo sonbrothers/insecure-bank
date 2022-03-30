@@ -15,7 +15,7 @@
 
 ## Running with Docker
 
-Run the insecure-bank application with Docker. Add a change
+Run the insecure-bank application with Docker.
 
 Place Hdiv agent and license in the application root folder.
 
