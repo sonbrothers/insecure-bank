@@ -2,6 +2,7 @@ package org.hdivsamples.security;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.hdivsamples.bean.Account;
 import org.hdivsamples.dao.AccountDao;
@@ -31,6 +32,8 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 		// Editable validation for Spring security Login page.
 		// The login page is not generated using Spring MVC Form tags (it is not possible with Spring Security)
 		// Stop login process and show login page again
+		Logger logger = Logger.getLogger(CustomAuthenticationProvider.class.getName());
+		
 		Object aux = RequestContextHolder.getRequestAttributes().getAttribute("org.hdiv.action.EDITABLE_PARAMETER_ERROR",
 				RequestAttributes.SCOPE_REQUEST);
 
@@ -63,7 +66,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 		}
 
 		User user = new User(listAccounts.get(0).getUsername(), listAccounts.get(0).getPassword(), authList);
-		logger.info(listAccounts.get(0).getPassword());
+		System.out.println(listAccounts.get(0).getPassword());
 		return new UsernamePasswordAuthenticationToken(user, password, authList);
 	}
 
