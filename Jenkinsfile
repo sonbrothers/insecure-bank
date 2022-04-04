@@ -144,7 +144,7 @@ pipeline {
                     //Build Breaker
                     if(workflowJSON.breaker.status==true) {
                           echo "Sending Notifications to Teams..."
-                          //curl -H 'Content-Type: application/json' -d '{"text": "Breaking the build for application: Insecure Bank"}' <Add_WebHook_URL>
+                          sh '''curl -H 'Content-Type: application/json' -d '{"text": "Breaking the build for application: Insecure Bank"}' https://synopsyssig.webhook.office.com/webhookb2/75838a49-a60e-4dec-ad9e-4d608b2a531c@99f3f5c1-a294-451e-9e1e-b3bbc8d9e4ba/IncomingWebhook/0b83c2e5774547ff9d89a63892325f46/19b0d4ae-c36c-423e-b436-2a4780775ce3'''
                           //echo "Breaking the build based on the identified Vulnerabilities. Setting pipeline to fail"
                           //exit 1
                     }
