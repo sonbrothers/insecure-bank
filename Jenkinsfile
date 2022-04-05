@@ -120,7 +120,7 @@ pipeline {
                     codeDx(configName: 'poc-codedx', projectId: '1'),
                     blackduck(configName: 'poc-bd', projectName: 'insecure-bank', projectVersion: '1.0'),
                     jira(assignee: 'karn@synopsys.com', configName: 'poc-jira', issueQuery: 'resolution=Unresolved AND labels in (Security, Defect)', projectKey: 'INSEC'), 
-                    //msteams(configName: 'poc-msteams'), 
+                    msteams(configName: 'poc-msteams'), 
                     buildBreaker(configName: 'poc-bb')
                 ]) {
                     sh 'io --stage workflow --state io_state.json'
