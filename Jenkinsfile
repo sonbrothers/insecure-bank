@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Checkout Source Code') {
             steps {
-                git branch: 'master', url: 'https://github.com/io-poc/leap-poc'
+                git branch: 'master', url: 'https://github.com/OzViper/insecure-bank'
             }
         }
 
@@ -26,17 +26,17 @@ pipeline {
             steps {
                 synopsysIO(connectors: [
                     io(
-                        configName: 'poc-io',
+                        configName: 'jd-poc-io',
                         projectName: 'insecure-bank',
-                        workflowVersion: '2021.12.4'),
+                        workflowVersion: '2022.4.1'),
                     github(
                         branch: 'master',
-                        configName: 'poc-github',
-                        owner: 'io-poc',
-                        repositoryName: 'leap-poc'), 
+                        configName: 'jd-poc-github',
+                        owner: 'OzViper',
+                        repositoryName: 'insecure-bank'), 
                      jira(
-                         assignee: 'karn@synopsys.com', 
-                         configName: 'poc-jira', 
+                         assignee: 'dubber@synopsys.com', 
+                         configName: 'jd-poc-jira', 
                          issueQuery: 'resolution=Unresolved', 
                          projectKey: 'INSEC', 
                          projectName: 'insecure-bank'), 
