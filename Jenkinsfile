@@ -26,13 +26,13 @@ pipeline {
             steps {
                 synopsysIO(connectors: [
                     io(
-                        configName: 'poc10-io',
+                        configName: 'io-10-poc',
                         projectName: 'my-insecure-bank',
                         workflowVersion: '2022.4.1'),
                     github(
                         branch: 'master',
                         configName: 'ozviper',
-                        owner: 'ozviper',
+                        owner: 'OzViper',
                         repositoryName: 'insecure-bank'), 
                     jira(
                          assignee: 'johnd', 
