@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Checkout Source Code') {
             steps {
-                git branch: 'master', url: 'https://github.com/OzViper/insecure-bank'
+                git branch: 'master', url: 'https://github.com/OzViper/insecure-bank.git'
             }
         }
 
@@ -31,8 +31,8 @@ pipeline {
                         workflowVersion: '2022.4.1'),
                     github(
                         branch: 'master',
-                        configName: 'github-OzViper',
-                        owner: 'io-poc10',
+                        configName: 'ozviper',
+                        owner: 'ozviper',
                         repositoryName: 'insecure-bank'), 
                     jira(
                          assignee: 'johnd', 
