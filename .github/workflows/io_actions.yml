@@ -2,69 +2,65 @@ name: "Synopsys Intelligent Security Scan"
 
 on:
   push:
-    branches: [master]
-  pull_request:
-    branches: [master]
+    branches: [ main ]
+  # pull_request:
+    # branches: [ main ]
 
 jobs:
-  security:
-    name: security scans
-    runs-on: ubuntu-latest
-
+  analyze:
+    name: Analyze
+    runs-on: self-hosted
+    
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
+      with:
+        # We must fetch at least the immediate parents so that if this is
+        # a pull request then we can checkout the head.
+        fetch-depth: 2
 
     # If this run was triggered by a pull request event, then checkout
     # the head of the pull request instead of the merge commit.
     - run: git checkout HEAD^2
       if: ${{ github.event_name == 'pull_request' }}
-
-    - name: Synopsys Intelligent Security Scan
-      id: prescription
-      uses: synopsys-sig/intelligent-security-scan@2022.4.1
-      with:
-        ioServerUrl: "${{secrets.ORG_IO_SERVER_URL}}"
-        ioServerToken: "${{secrets.ORG_IO_SERVER_TOKEN}}"
-        additionalWorkflowArgs: --persona=developer --release.type=minor --sast.rescan.threshold=5 --sca.rescan.threshold=5 
-                  --polaris.url=${{secrets.ORG_POLARIS_SERVER_URL}} --polaris.token=${{secrets.ORG_POLARIS_ACCESS_TOKEN}} 
-                  --sensitive.package.pattern='.*(\\+\\+\\+.*(com\\/example\\/app)).*'
-        stage: "IO"
-
-    # Please note that the ID in previous step was set to prescription
-    # in order for this logic to work also make sure that POLARIS_ACCESS_TOKEN
-    # is defined in settings
-    - name: Static Analysis with Polaris
-      if: ${{steps.prescription.outputs.sastScan == 'true' }}
+      
+    - name: Intelligent Orchestration
       run: |
-          export POLARIS_SERVER_URL=${{secrets.ORG_POLARIS_SERVER_URL}}
-          export POLARIS_ACCESS_TOKEN=${{secrets.ORG_POLARIS_ACCESS_TOKEN}}
-          wget -q ${{secrets.POLARIS_SERVER_URL}}/api/tools/polaris_cli-linux64.zip
-          unzip -j -o polaris_cli-linux64.zip -d /tmp
-          /tmp/polaris analyze -w
-
-    # Please note that the ID in previous step was set to prescription
-    # in order for this logic to work
-    - name: Software Composition Analysis with Black Duck
-      if: ${{steps.prescription.outputs.scaScan == 'true'}}
-      uses: blackducksoftware/github-action@v2
-      with:
-        args: '--blackduck.url="${{secrets.ORG_BLACKDUCK_URL}}" --blackduck.api.token="${{secrets.ORG_BLACKDUCK_API_TOKEN}}" --detect.tools="DETECTOR"'
-
-    - name: Synopsys Intelligent Security Scan
-      uses: synopsys-sig/intelligent-security-scan@2022.4.1
-      with:
-        ioServerUrl: "${{secrets.ORG_IO_SERVER_URL}}"
-        ioServerToken: "${{secrets.ORG_IO_SERVER_TOKEN}}"
-        workflowServerUrl: "${{secrets.ORG_WORKFLOW_SERVER_URL}}"
-        additionalWorkflowArgs: --IS_SAST_ENABLED=${{steps.prescription.outputs.sastScan}} --IS_SCA_ENABLED=${{steps.prescription.outputs.scaScan}}
-                --slack.channel.id=${{secrets.ORG_SLACK_CHANNEL_ID}} --slack.token=${{secrets.ORG_SLACK_TOKEN}} 
-                --polaris.project.name=${{secrets.ORG_POLARIS_PROJECT_NAME}} --polaris.url=${{secrets.ORG_POLARIS_SERVER_URL}} --polaris.token=${{secrets.ORG_POLARIS_ACCESS_TOKEN}} 
-                --blackduck.project.name=${{secrets.ORG_BLACKDUCK_PROJECT_NAME}} --blackduck.url=${{secrets.ORG_BLACKDUCK_URL}} --blackduck.api.token=${{secrets.ORG_BLACKDUCK_TOKEN}}
-        stage: "WORKFLOW"
-
-    - name: Upload SARIF file
-      uses: github/codeql-action/upload-sarif@v1
-      with:
-        # Path to SARIF file relative to the root of the repository
-        sarif_file: workflowengine-results.sarif.json
+            if [ ! -d 'io_client-${{secrets.IO_CLIENT_VERSION}}-${{secrets.RUNNER_OS_TYPE}}' ]; then
+              wget "${{secrets.IO_CLIENT_URL}}/download/io_client-${{secrets.IO_CLIENT_VERSION}}-${{secrets.RUNNER_OS_TYPE}}.zip"
+              unzip -o io_client-${{secrets.IO_CLIENT_VERSION}}-${{secrets.RUNNER_OS_TYPE}}.zip
+              chmod a+x ./blackduck.sh
+            fi
+            chmod +x io_client-${{secrets.IO_CLIENT_VERSION}}-${{secrets.RUNNER_OS_TYPE}}/io  
+            io_client-${{secrets.IO_CLIENT_VERSION}}-${{secrets.RUNNER_OS_TYPE}}/io --stage io --stage execution --stage workflow --adapters adapters.json
+      env:
+        SYNOPSYS_IO_Workflow_Engine_Version : 2022.4.1
+        SYNOPSYS_IO_io_server_token: ${{secrets.IO_SERVER_TOKEN}}
+        SYNOPSYS_IO_project_name: "my-insecure-bank"
+        SYNOPSYS_IO_io_server_url: ${{secrets.IO_SERVER_URL}}
+        SYNOPSYS_IO_persona_type: devsecops
+        SYNOPSYS_IO_polaris_instanceurl: ${{secrets.POLARIS_SERVER_URL}}
+        SYNOPSYS_IO_polaris_authtoken:  ${{secrets.POLARIS_ACCESS_TOKEN}}
+        SYNOPSYS_IO_polaris_projectName: "my-insecure-bank"
+        SYNOPSYS_IO_Jira_HostUrl: ${{secrets.JIRA_URL}}
+        SYNOPSYS_IO_Jira_Username: "johnd"
+        SYNOPSYS_IO_Jira_AuthToken: ${{secrets.JIRA_AUTH_TOKEN}}
+        SYNOPSYS_IO_Jira_IssueType: "Bug"
+        SYNOPSYS_IO_Jira_Project_Key: "GIT"
+        SYNOPSYS_IO_Jira_Assignee: "johnd"
+        SYNOPSYS_IO_slack_channelIdentifier: "C0"
+        SYNOPSYS_IO_slack_bearerToken: ${{secrets.SLACK_TOKEN}}
+        SYNOPSYS_IO_jira_issuesquery: "resolution=Unresolved AND labels in (Security, Defect)"
+        SYNOPSYS_IO_jira_project_name: "Github-Actions-IO"
+        SYNOPSYS_IO_scm_type: "github"
+        SYNOPSYS_IO_scm_owner: "ozviper"
+        SYNOPSYS_IO_scm_repository_name: "insecure-bank"
+        SYNOPSYS_IO_scm_repository_branch_name: "main"
+        SYNOPSYS_IO_github_token: ${{secrets.GTH_AUTH_TOKEN}}
+        SYNOPSYS_IO_github_username: "ozviper"
+        SYNOPSYS_IO_github_apiUrl: "https://api.github.com/repos"
+        SYNOPSYS_IO_project_release_type: "major"
+        SYNOPSYS_IO_Blackduck_AuthToken: ${{secrets.BLACKDUCK_TOKEN}}
+        SYNOPSYS_IO_Blackduck_ProjectName: "my-insecure-bank"
+        SYNOPSYS_IO_Blackduck_InstanceUrl: ${{secrets.BLACKDUCK_URL}}
+        SYNOPSYS_IO_Blackduck_ProjectVersion: "1.0"
