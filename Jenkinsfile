@@ -26,7 +26,7 @@ pipeline {
             steps {
                 synopsysIO(connectors: [
                     io(
-                        configName: 'io-poc10',
+                        configName: 'io-poc38',
                         projectName: 'my-insecure-bank',
                         workflowVersion: '2022.4.1'),
                     github(
