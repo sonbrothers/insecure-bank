@@ -31,7 +31,7 @@ pipeline {
                         workflowVersion: '2022.4.1'),
                     github(
                         branch: 'master',
-                        configName: 'ozviper',
+                        configName: 'github-ozviper',
                         owner: 'OzViper',
                         repositoryName: 'insecure-bank'), 
                     jira(
