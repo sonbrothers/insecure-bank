@@ -1,0 +1,14 @@
+version: "1"
+install:
+  coverity:
+    version: latest
+project:
+  name: "my-insecure-bank"
+  branch: "origin/master"
+  captureDir: 
+capture:
+  coverity:
+    buildless:
+      project:
+        languages:
+          - "java"
