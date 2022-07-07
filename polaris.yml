@@ -1,14 +1,18 @@
 version: "1"
-install:
-  coverity:
-    version: latest
 project:
-  name: "my-insecure-bank"
-  branch: "origin/master"
-  captureDir: 
+  name: JSD-${scm.git.repo}
+  branch: JSD-${scm.git.branch}-buildless
+  revision:
+    name: JSD-${scm.git.commit}
+    date: ${scm.git.commit.date}
 capture:
   coverity:
     buildless:
       project:
         languages:
           - "java"
+          - "javascript
+install:
+  coverity:
+    version: latest
+serverUrl: https://sipse.polaris.synopsys.com
