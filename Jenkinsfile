@@ -78,7 +78,7 @@ pipeline {
             }
         }
         
-        stage('SAST- RapidScan') { environment {
+       /* stage('SAST- RapidScan') { environment {
             OSTYPE='linux-gnu' }
             when {
                expression { isSASTEnabled }
@@ -91,7 +91,7 @@ pipeline {
             }
         } 
         
-      /*  stage('SAST Plus Manual') {
+        stage('SAST Plus Manual') {
             when {
                 expression { isSASTPlusMEnabled }
             }
