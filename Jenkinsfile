@@ -78,7 +78,7 @@ pipeline {
             }
         }
         
-      /*  stage('SAST- RapidScan') { environment {
+        stage('SAST- RapidScan') { environment {
             OSTYPE='linux-gnu' }
             when {
                expression { isSASTEnabled }
@@ -91,7 +91,7 @@ pipeline {
             }
         } 
         
-        stage('SAST Plus Manual') {
+      /*  stage('SAST Plus Manual') {
             when {
                 expression { isSASTPlusMEnabled }
             }
@@ -128,14 +128,14 @@ pipeline {
                 }
                 echo "Out-of-Band Activity - DAST Plus Manual triggered & approved"
             }
-        } 
+        } */
 
         stage('IO - Workflow') {
             steps {
                 echo 'Execute Workflow Stage'
                 synopsysIO(connectors: [
-                    codeDx(configName: 'SIG-CodeDx', projectId: '20'),
-                    jira(assignee: 'karn@synopsys.com', configName: 'jira-sandbox', issueQuery: 'resolution=Unresolved AND labels in (Security, Defect)', projectKey: 'INSEC'), 
+                    codeDx(configName: 'codedx-poc10', projectId: '2'),
+                    jira(assignee: 'johnd', configName: 'jira-poc10', issueQuery: 'resolution=Unresolved AND labels in (Security, Defect)', projectKey: 'INSEC'), 
                     //msteams(configName: 'poc-msteams'), 
                     //buildBreaker(configName: 'poc-bb')
                 ]) {
