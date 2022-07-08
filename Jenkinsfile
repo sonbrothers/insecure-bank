@@ -35,7 +35,7 @@ def jiraProjectKey = 'IRMOB'
 def jiraProjectName = 'IRMOB'
 
 // Code Dx Configuration
-def codeDxConfigName = 'codedx-poc10'
+def codeDxConfigName = 'codedx-io10'
 def codeDxProjectId = '2'
 def codeDxInstnceURL = 'https://poc10.codedx.synopsys.com/codedx'
 def codeDxProjectAPI = '/api/projects/'
