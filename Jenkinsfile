@@ -44,8 +44,8 @@ def codeDxProjectContext = codeDxProjectId + ';branch=' + fileBranchName
 def codeDxBranchAnalysisAPI = codeDxInstnceURL + codeDxProjectAPI + codeDxProjectId + codeDxAnalysisEndpoint
 
 // Notification Configuration
-def slackConfigName = 'slack-poc38'
-def msTeamsConfigName = 'msteams-poc'
+def slackConfigName = ''
+def msTeamsConfigName = ''
 
 // IO Prescription Placeholders
 def runId
@@ -212,12 +212,12 @@ pipeline {
                     print("========================== Code Dx Branch Analysis ============================")
                 }
                 synopsysIO(connectors: [
-                    slack(configName: slackConfigName),
-                    msteams(configName: msTeamsConfigName)]) {
-                        sh 'io --stage workflow --state io_state.json'
-                }
+                 /*   slack(configName: slackConfigName),
+                    msteams(configName: msTeamsConfigName)*/ ]) {
+                        sh 'io --stage workflow --state io_state.json' 
+               } 
             }
-        }
+        } 
 
         // Security Sign-Off Stage
         stage('Security') {
