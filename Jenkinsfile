@@ -208,7 +208,7 @@ pipeline {
             steps {
                 script {
                     print("========================== Code Dx Branch Analysis ============================")
-                    def res = sh(script: "curl --location --request POST ${codeDxBranchAnalysisAPI} --header 'Authorization: Bearer ${CODEDX_ACCESS_TOKEN}' --form 'filenames=\"\"' --form 'includeGitSource=\"\"' --form 'gitBranchName=\"\"' --form 'branchName=${env.BRANCH_NAME}'", returnStdout: true)
+                    def res = sh(script: "curl --location --request POST ${codeDxBranchAnalysisAPI} --header 'Authorization: Bearer ${CODEDX_ACCESS_TOKEN}' --form 'filenames=\"\"' --form 'includeGitSource=\"\"' --form 'gitBranchName=\"\"' --form 'branchName=${fileBranchName}'", returnStdout: true)
                     echo("${res}")
                     print("========================== Code Dx Branch Analysis ============================")
                 }
