@@ -9,9 +9,9 @@ def ioServerURL = "https://io10.codedx.synopsys.com"
 def ioRunAPI = "/api/ioiq/api/orchestration/runs/"
 
 // SCM - GitHub
-def gitHubPOCId = 'github-OzViper'
+def gitHubPOCId = 'github-ozviper'
 def gitHubOwner = 'OzViper'
-def scmBranch = env.BRANCH_NAME
+def scmBranch = 'master'
 def scmRepoName = 'insecure-bank'
 
 // AST - Polaris
