@@ -3,7 +3,7 @@ import groovy.json.JsonSlurper
 
 // File Enviroment
 def fileProjectName = 'my-insecure-bank'
-def fileBranchName = env.BRANCH_NAME
+def fileBranchName = 'master'
 // IO Environment
 def ioPOCId = 'io-10-poc'
 def ioProjectName = fileProjectName
