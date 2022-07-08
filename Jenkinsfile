@@ -1,9 +1,12 @@
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
+// File Enviroment
+def fileProjectName = 'my-insecure-bank'
+def fileBranchName = 'master'
 // IO Environment
 def ioPOCId = 'io-10-poc'
-def ioProjectName = env.BRANCH_NAME
+def ioProjectName = ${fileProjectName}
 def ioWorkflowEngineVersion = '2022.4.1'
 def ioServerURL = "https://io10.codedx.synopsys.com"
 def ioRunAPI = "/api/ioiq/api/orchestration/runs/"
@@ -11,18 +14,18 @@ def ioRunAPI = "/api/ioiq/api/orchestration/runs/"
 // SCM - GitHub
 def gitHubPOCId = 'ozviper'
 def gitHubOwner = 'OzViper'
-def scmBranch = 'master'
+def scmBranch = ${fileBranchName}
 def scmRepoName = 'insecure-bank'
 
 // AST - Polaris
 def polarisConfigName = 'polaris-sipse'
-def polarisProjectName = env.JOB_NAME
-def polarisBranchName = env.BRANCH_NAME
+def polarisProjectName = ${fileProjectName}
+def polarisBranchName = ${fileBranchName}
 
 // AST - Black Duck
 def blackDuckPOCId = 'blackduck-testing'
-def blackDuckProjectName = env.JOB_NAME
-def blackDuckProjectVersion = env.BRANCH_NAME
+def blackDuckProjectName = ${fileProjectName}
+def blackDuckProjectVersion = ${fileBranchName}
 
 // BTS Configuration
 def jiraAssignee = 'johnd'
@@ -37,7 +40,7 @@ def codeDxProjectId = '2'
 def codeDxInstnceURL = 'https://poc10.codedx.synopsys.com/codedx'
 def codeDxProjectAPI = '/api/projects/'
 def codeDxAnalysisEndpoint = '/analysis'
-def codeDxProjectContext = codeDxProjectId + ';branch=' + env.BRANCH_NAME
+def codeDxProjectContext = codeDxProjectId + ';branch=' + fileBranchName
 def codeDxBranchAnalysisAPI = codeDxInstnceURL + codeDxProjectAPI + codeDxProjectId + codeDxAnalysisEndpoint
 
 // Notification Configuration
