@@ -24,8 +24,8 @@ def polarisBranchName = fileBranchName
 
 // AST - Black Duck
 def blackDuckPOCId = 'blackduck-testing'
-def blackDuckProjectName = ${fileProjectName}
-def blackDuckProjectVersion = ${fileBranchName}
+def blackDuckProjectName = fileProjectName
+def blackDuckProjectVersion = fileBranchName
 
 // BTS Configuration
 def jiraAssignee = 'johnd'
