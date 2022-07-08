@@ -79,9 +79,9 @@ pipeline {
             }
         }
 
-        stage('NPM Build') {
+        stage('Build') {
             steps {
-                echo "Build/Verify commands here"
+                echo "mvn cclean compile"
             }
         }
 
