@@ -84,7 +84,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                echo "mvn cclean compile"
+                echo "mvn clean compile"
             }
         }
 
