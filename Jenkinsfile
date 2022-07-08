@@ -3,7 +3,7 @@ import groovy.json.JsonSlurper
 
 // File Enviroment
 def fileProjectName = 'my-insecure-bank'
-def fileBranchName = scm.git.branch
+def fileBranchName = ${scm.git.branch}
 // IO Environment
 def ioPOCId = 'io-10-poc'
 def ioProjectName = fileProjectName
@@ -16,7 +16,7 @@ def gitHubPOCId = 'poc10-github'
 def gitHubOwner = 'OzViper'
 def scmBranch = fileBranchName
 def scmRepoName = 'insecure-bank'
-def scmRevisionDate = scm.git.commit.date
+def scmRevisionDate = ${scm.git.commit.date}
 
 // AST - Polaris
 def polarisConfigName = 'polaris-sipse'
