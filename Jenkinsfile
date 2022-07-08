@@ -16,7 +16,7 @@ def gitHubPOCId = 'poc10-github'
 def gitHubOwner = 'OzViper'
 def scmBranch = fileBranchName
 def scmRepoName = 'insecure-bank'
-def scmRevisionDate = 
+def scmRevisionDate = ''
 
 // AST - Polaris
 def polarisConfigName = 'polaris-sipse'
