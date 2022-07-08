@@ -6,7 +6,7 @@ def fileProjectName = 'my-insecure-bank'
 def fileBranchName = 'master'
 // IO Environment
 def ioPOCId = 'io-10-poc'
-def ioProjectName = ${fileProjectName}
+def ioProjectName = fileProjectName
 def ioWorkflowEngineVersion = '2022.4.1'
 def ioServerURL = "https://io10.codedx.synopsys.com"
 def ioRunAPI = "/api/ioiq/api/orchestration/runs/"
@@ -14,13 +14,13 @@ def ioRunAPI = "/api/ioiq/api/orchestration/runs/"
 // SCM - GitHub
 def gitHubPOCId = 'ozviper'
 def gitHubOwner = 'OzViper'
-def scmBranch = ${fileBranchName}
+def scmBranch = fileBranchName
 def scmRepoName = 'insecure-bank'
 
 // AST - Polaris
 def polarisConfigName = 'polaris-sipse'
-def polarisProjectName = ${fileProjectName}
-def polarisBranchName = ${fileBranchName}
+def polarisProjectName = fileProjectName
+def polarisBranchName = fileBranchName
 
 // AST - Black Duck
 def blackDuckPOCId = 'blackduck-testing'
