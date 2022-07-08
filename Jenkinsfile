@@ -1,185 +1,263 @@
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+
+// IO Environment
+def ioPOCId = 'io-10-poc'
+def ioProjectName = env.BRANCH_NAME
+def ioWorkflowEngineVersion = '2022.4.1'
+def ioServerURL = "https://io10.codedx.synopsys.com"
+def ioRunAPI = "/api/ioiq/api/orchestration/runs/"
+
+// SCM - GitHub
+def gitHubPOCId = 'github-ozviper'
+def gitHubOwner = 'OzViper'
+def scmBranch = env.BRANCH_NAME
+def scmRepoName = 'insecure-bank'
+
+// AST - Polaris
+def polarisConfigName = 'polaris-sipse'
+def polarisProjectName = env.JOB_NAME
+def polarisBranchName = env.BRANCH_NAME
+
+// AST - Black Duck
+def blackDuckPOCId = 'blackduck-testing'
+def blackDuckProjectName = env.JOB_NAME
+def blackDuckProjectVersion = env.BRANCH_NAME
+
+// BTS Configuration
+def jiraAssignee = 'johnd'
+def jiraConfigName = 'jira-poc10'
+def jiraIssueQuery = 'resolution=Unresolved'
+def jiraProjectKey = 'IRMOB'
+def jiraProjectName = 'IRMOB'
+
+// Code Dx Configuration
+def codeDxConfigName = 'codedx-poc10'
+def codeDxProjectId = '2'
+def codeDxInstnceURL = 'https://poc10.codedx.synopsys.com/codedx'
+def codeDxProjectAPI = '/api/projects/'
+def codeDxAnalysisEndpoint = '/analysis'
+def codeDxProjectContext = codeDxProjectId + ';branch=' + env.BRANCH_NAME
+def codeDxBranchAnalysisAPI = codeDxInstnceURL + codeDxProjectAPI + codeDxProjectId + codeDxAnalysisEndpoint
+
+// Notification Configuration
+def slackConfigName = 'slack-poc38'
+def msTeamsConfigName = 'msteams-poc'
+
+// IO Prescription Placeholders
+def runId
 def isSASTEnabled
 def isSASTPlusMEnabled
 def isSCAEnabled
 def isDASTEnabled
 def isDASTPlusMEnabled
-
+def isImageScanEnabled
+def isNetworkScanEnabled
+def isCloudReviewEnabled
+def isThreatModelEnabled
+def isInfraReviewEnabled
+def breakBuild
 
 pipeline {
     agent any
+
+    tools {
+        maven 'Maven3'
+    }
+
     stages {
-        stage('Checkout Source Code') {
-            steps {
-                git branch: 'master', url: 'https://github.com/OzViper/insecure-bank.git'
+        stage('Checkout') {
+            environment {
+                GITHUB_ACCESS_TOKEN = credentials("${gitHubPOCId}")
             }
-        }
-
-        stage('Build Source Code') {
             steps {
-                  withMaven(maven: 'Maven3') {
-                      sh '''mvn clean package -Dmaven.test.skip'''
-                  }
-            }
-        } 
-
-        stage('IO - Prescription') {
-            steps {
-                synopsysIO(connectors: [
-                    io(
-                        configName: 'io-10-poc',
-                        projectName: 'my-insecure-bank',
-                        workflowVersion: '2022.4.1'),
-                    github(
-                        branch: 'master',
-                        configName: 'github-ozviper',
-                        owner: 'OzViper',
-                        repositoryName: 'insecure-bank'), 
-                    jira(
-                         assignee: 'johnd', 
-                         configName: 'jira-poc10', 
-                         issueQuery: 'resolution=Unresolved', 
-                         projectKey: 'INSEC', 
-                         projectName: 'my-insecure-bank') 
-                   /* blackduck(
-                        configName: 'BIZDevBD', 
-                        projectName: 'codedx_insecure', 
-                        projectVersion: '1.0')        */                
-                    ]) {
-                        sh 'io --stage io Persona.Type=developer Project.Release.Type=major'
-                    }
-
                 script {
-                    def prescriptionJSON = readJSON file: 'io_state.json'
-
-                    isSASTEnabled = prescriptionJSON.data.prescription.security.activities.sast.enabled
-                    isSASTPlusMEnabled = prescriptionJSON.data.prescription.security.activities.sastPlusM.enabled
-                    isSCAEnabled = prescriptionJSON.data.prescription.security.activities.sca.enabled
-                    isDASTEnabled = prescriptionJSON.data.prescription.security.activities.dast.enabled
-                    isDASTPlusMEnabled = prescriptionJSON.data.prescription.security.activities.dastPlusM.enabled
-                    isImageScanEnabled = prescriptionJSON.data.prescription.security.activities.imageScan.enabled
-
+                    cleanWs()
+                    def scmURL = "https://${GITHUB_ACCESS_TOKEN}@github.com/${gitHubOwner}/${scmRepoName}"
+                    git branch: scmBranch, url: scmURL
                 }
             }
         }
 
+        stage('NPM Build') {
+            steps {
+                echo "Build/Verify commands here"
+            }
+        }
 
-        stage('SAST - Polaris') {
+        // Get prescription from IO
+        stage('Prescription') {
+            environment {
+                IO_ACCESS_TOKEN = credentials("${ioPOCId}")
+            }
+            steps {
+                synopsysIO(connectors: [
+                    io(
+                        configName: ioPOCId,
+                        projectName: ioProjectName,
+                        workflowVersion: ioWorkflowEngineVersion),
+                    github(
+                        branch: scmBranch,
+                        configName: gitHubPOCId,
+                        owner: gitHubOwner,
+                        repositoryName: scmRepoName),
+                    jira(
+                        assignee: jiraAssignee,
+                        configName: jiraConfigName,
+                        issueQuery: jiraIssueQuery,
+                        projectKey: jiraProjectKey,
+                        projectName: jiraProjectName)
+                    ]) {
+                        sh 'io --stage io'
+                    }
+
+                script {
+                    // IO-IQ will write the prescription to io_state JSON
+                    if (fileExists('io_state.json')) {
+                        def prescriptionJSON = readJSON file: 'io_state.json'
+
+                        // Pretty-print Prescription JSON
+                        // def prescriptionJSONFormat = JsonOutput.toJson(prescriptionJSON)
+                        // prettyJSON = JsonOutput.prettyPrint(prescriptionJSONFormat)
+                        // echo("${prettyJSON}")
+
+                        // Use the run Id from IO IQ to get detailed message/explanation on prescription
+                        runId = prescriptionJSON.data.io.run.id
+                        def apiURL = ioServerURL + ioRunAPI + runId
+                        def res = sh(script: "curl --location --request GET ${apiURL} --header 'Authorization: Bearer ${IO_ACCESS_TOKEN}'", returnStdout: true)
+
+                        def jsonSlurper = new JsonSlurper()
+                        def ioRunJSON = jsonSlurper.parseText(res)
+                        def ioRunJSONFormat = JsonOutput.toJson(ioRunJSON)
+                        def ioRunJSONPretty = JsonOutput.prettyPrint(ioRunJSONFormat)
+                        print("==================== IO-IQ Explanation ======================")
+                        echo("${ioRunJSONPretty}")
+                        print("==================== IO-IQ Explanation ======================")
+
+                        // Update security flags based on prescription
+                        isSASTEnabled = prescriptionJSON.data.prescription.security.activities.sast.enabled
+                        isSASTPlusMEnabled = prescriptionJSON.data.prescription.security.activities.sastPlusM.enabled
+                        isSCAEnabled = prescriptionJSON.data.prescription.security.activities.sca.enabled
+                        isDASTEnabled = prescriptionJSON.data.prescription.security.activities.dast.enabled
+                        isDASTPlusMEnabled = prescriptionJSON.data.prescription.security.activities.dastPlusM.enabled
+                        isImageScanEnabled = prescriptionJSON.data.prescription.security.activities.imageScan.enabled
+                        isNetworkScanEnabled = prescriptionJSON.data.prescription.security.activities.NETWORK.enabled
+                        isCloudReviewEnabled = prescriptionJSON.data.prescription.security.activities.CLOUD.enabled
+                        isThreatModelEnabled = prescriptionJSON.data.prescription.security.activities.THREATMODEL.enabled
+                        isInfraReviewEnabled = prescriptionJSON.data.prescription.security.activities.INFRA.enabled
+                    } else {
+                        error('IO prescription JSON not found.')
+                    }
+                }
+            }
+        }
+
+        // SAST
+        stage('SAST') {
             when {
                 expression { isSASTEnabled }
             }
             steps {
                 echo 'Running SAST using Polaris'
                 synopsysIO(connectors: [
-                    [$class: 'PolarisPipelineConfig',
-                    configName: 'polaris-sipse',
-                    projectName: 'my-insecure-bank']]) {
-                    sh 'io --stage execution --state io_state.json'
+                    polaris(
+                        configName: polarisConfigName, 
+                        projectName: polarisProjectName,
+                        branchName: polarisBranchName)]) {
+                            sh 'io --stage execution --state io_state.json'
                 }
             }
         }
-        
-       /* stage('SAST- RapidScan') { environment {
-            OSTYPE='linux-gnu' }
-            when {
-               expression { isSASTEnabled }
-            }
-            steps {
-                echo 'Running SAST using Sigma - Rapid Scan'
-                echo env.OSTYPE
-                synopsysIO(connectors: [rapidScan(configName: 'sigma-sandbox')]) {
-                sh 'io --stage execution --state io_state.json' }
-            }
-        } 
-        
-        stage('SAST Plus Manual') {
-            when {
-                expression { isSASTPlusMEnabled }
-            }
-            steps {
-                script {
-                    input message: 'Manual source code review (SAST - Manual) triggered by IO. Proceed?'
-                }
-                echo "Out-of-Band Activity - SAST Plus Manual triggered & approved"
-            }
-        } */
 
-        stage('SCA - BlackDuck') {
+        // SCA
+        stage('SCA') {
             when {
                 expression { isSCAEnabled }
             }
             steps {
-              echo 'Running SCA using BlackDuck'
-              synopsysIO(connectors: [
-                  blackduck(configName: 'blackduck-testing',
-                  projectName: 'my-insecure-bank',
-                  projectVersion: '1.0')]) {
-                  sh 'io --stage execution --state io_state.json'
-              }
-            }
-        } 
-
-       /* stage('DAST Plus Manual') {
-            when {
-                expression { isDASTPlusMEnabled }
-            }
-            steps {
-                script {
-                    input message: 'Manual threat-modeling (DAST - Manual) triggered by IO. Proceed?'
-                }
-                echo "Out-of-Band Activity - DAST Plus Manual triggered & approved"
-            }
-        } */
-
-        stage('IO - Workflow') {
-            steps {
-                echo 'Execute Workflow Stage'
+                echo 'Running SCA using Blac kDuck'
                 synopsysIO(connectors: [
-                    codeDx(configName: 'codedx-poc10', projectId: '2'),
-                    jira(assignee: 'johnd', configName: 'jira-poc10', issueQuery: 'resolution=Unresolved AND labels in (Security, Defect)', projectKey: 'INSEC'), 
-                    //msteams(configName: 'poc-msteams'), 
-                    //buildBreaker(configName: 'poc-bb')
-                ]) {
-                    sh 'io --stage workflow --state io_state.json'
+                    blackduck(
+                        configName: blackDuckPOCId,
+                        projectName: blackDuckProjectName,
+                        projectVersion: blackDuckProjectVersion)]) {
+                            sh 'io --stage execution --state io_state.json'
                 }
-                
-                 script {
-                    def workflowJSON = readJSON file: 'wf-output.json'
-                    print("========================== IO WorkflowEngine Summary ============================")
-                    print("Breaker Status: $workflowJSON.breaker.status")
-                } 
             }
         }
-        
-        stage('Security Sign-Off') {
+
+        // Manual SAST Stage
+        stage('SAST+M') {
+            when {
+                expression { isSASTPlusMEnabled }
+            }
+            steps {
+                input message: 'High risk score or significant code-change detected. Perform manual secure code-review.'
+            }
+        }
+
+        // Run IO's Workflow Engine
+        stage('Workflow') {
+            environment {
+                CODEDX_ACCESS_TOKEN = credentials("${codeDxConfigName}")
+            }
             steps {
                 script {
-
-                    def workflowJSON = readJSON file: 'wf-output.json'
-                    
-                    
-                    //Build Breaker
-                    if(workflowJSON.breaker.status==true) {
-                          echo "Sending Notifications to Teams..."
-                          //sh '''curl -H 'Content-Type: application/json' -d '{"text": "Breaking the build for application: Insecure Bank"}' <WEBHOOK>'''
-                          echo "Breaking the build based on the identified Vulnerabilities. Setting pipeline to fail"
-                          //exit 1
-                    }
-                    
-                    codedx_value = workflowJSON.summary.risk_score
-                    for(arr in codedx_value){
-                        if(arr != null)
-                        {   
-                            print("Code Dx Score: $arr")
-                            if(arr < 80)
-                            {
-                                input message: 'Code Dx Score did not meet the defined threshold. Do you wish to proceed?'
-                            }
-                        }
-                    }
-                    
+                    print("========================== Code Dx Branch Analysis ============================")
+                    def res = sh(script: "curl --location --request POST ${codeDxBranchAnalysisAPI} --header 'Authorization: Bearer ${CODEDX_ACCESS_TOKEN}' --form 'filenames=\"\"' --form 'includeGitSource=\"\"' --form 'gitBranchName=\"\"' --form 'branchName=${env.BRANCH_NAME}'", returnStdout: true)
+                    echo("${res}")
+                    print("========================== Code Dx Branch Analysis ============================")
                 }
-                echo "Security Sign-Off triggered & approved"
+                synopsysIO(connectors: [
+                    slack(configName: slackConfigName),
+                    msteams(configName: msTeamsConfigName)]) {
+                        sh 'io --stage workflow --state io_state.json'
+                }
             }
-        } 
+        }
+
+        // Security Sign-Off Stage
+        stage('Security') {
+            steps {
+                script {
+                    if (fileExists('wf-output.json')) {
+                        def wfJSON = readJSON file: 'wf-output.json'
+
+                        // If the Workflow Output JSON has a lot of key-values; Jenkins throws a StackOverflow Exception
+                        //  when trying to pretty-print the JSON
+                        // def wfJSONFormat = JsonOutput.toJson(wfJSON)
+                        // def wfJSONPretty = JsonOutput.prettyPrint(wfJSONFormat)
+                        // print("======================== IO Workflow Engine Summary ==========================")
+                        // print(wfJSONPretty)
+                        // print("======================== IO Workflow Engine Summary ==========================")
+
+                        breakBuild = wfJSON.breaker.status
+                        print("========================== Build Breaker Status ============================")
+                        print("Breaker Status: $breakBuild")
+                        print("========================== Build Breaker Status ============================")
+
+                        if (breakBuild) {
+                            input message: 'Build-breaker criteria met.'
+                        }
+                    } else {
+                        print('No output from the Workflow Engine. No sign-off required.')
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            // Archive Results/Logs
+            // archiveArtifacts artifacts: '**/*-results*.json', allowEmptyArchive: 'true'
+
+            script {
+                // Remove the state json file as it has sensitive information
+                if (fileExists('io_state.json')) {
+                    sh 'rm io_state.json'
+                }
+            }
+        }
     }
 }
