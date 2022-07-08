@@ -12,7 +12,7 @@ def ioServerURL = "https://io10.codedx.synopsys.com"
 def ioRunAPI = "/api/ioiq/api/orchestration/runs/"
 
 // SCM - GitHub
-def gitHubPOCId = 'github-ozviper'
+def gitHubPOCId = 'poc10-github'
 def gitHubOwner = 'OzViper'
 def scmBranch = fileBranchName
 def scmRepoName = 'insecure-bank'
