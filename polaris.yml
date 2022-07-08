@@ -1,9 +1,9 @@
 version: "1"
 project:
-  name: JSD-${scm.git.repo}
-  branch: JSD-${scm.git.branch}-buildless
+  name: ${scm.git.repo}
+  branch: ${scm.git.branch}
   revision:
-    name: JSD-${scm.git.commit}
+    name: ${scm.git.commit}
     date: ${scm.git.commit.date}
 capture:
   coverity:
