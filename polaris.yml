@@ -1,7 +1,7 @@
 version: "1"
 project:
   name: ${scm.git.repo}
-  branch: ${scm.git.branch}
+  branch: master
   revision:
     name: ${scm.git.commit}
     date: ${scm.git.commit.date}
