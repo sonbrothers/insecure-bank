@@ -3,7 +3,7 @@ import groovy.json.JsonSlurper
 
 // File Enviroment
 def fileProjectName = 'Sam-IO-POC-insecure-bank'
-def fileBranchName = 'main'
+def fileBranchName = 'master'
 
 // IO Environment
 def ioPOCId = 'IO-08-POC'
@@ -15,7 +15,7 @@ def ioRunAPI = "/api/ioiq/api/orchestration/runs/"
 // SCM - GitHub
 def gitHubPOCId = 'IO-Github-Secret'
 def gitHubOwner = 'sonbrothers'
-def scmBranch = fileBranchName
+def scmBranch = 'master'
 def scmRepoName = 'insecure-bank'
 def scmRevisionDate = ''
 
