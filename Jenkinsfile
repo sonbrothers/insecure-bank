@@ -6,7 +6,7 @@ import groovy.json.JsonSlurper
 //def fileBranchName = 'master'
 
 // IO Environment
-def ioPOCId = 'IO-08-POC' //IO Token in Jenkins
+def ioPOCId = 'IO-08-POC'
 def ioProjectName = 'Sam-IO-POC-insecure-bank'
 def ioWorkflowEngineVersion = '2022.7.0'
 def ioServerURL = "https://io08.codedx.synopsys.com"
@@ -15,6 +15,7 @@ def ioRunAPI = "/api/ioiq/api/orchestration/runs/"
 // SCM - GitHub
 def gitHubPOCId = 'IO-Github-Secret'
 def gitHubOwner = 'sonbrothers'
+def scmBranch = 'master'
 def scmBranch = fileBranchName
 def scmRepoName = 'insecure-bank'
 def scmRevisionDate = ''
