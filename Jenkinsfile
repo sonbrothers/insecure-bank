@@ -15,7 +15,7 @@ def ioRunAPI = "/api/ioiq/api/orchestration/runs/"
 // SCM - GitHub
 def gitHubPOCId = 'IO-Github-Secret'
 def gitHubOwner = 'sonbrothers'
-def scmBranch = 'master'
+def scmBranch = fileBranchName
 def scmRepoName = 'insecure-bank'
 def scmRevisionDate = ''
 
