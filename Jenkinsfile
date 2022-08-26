@@ -106,12 +106,12 @@ pipeline {
                         configName: gitHubPOCId,
                         owner: gitHubOwner,
                         repositoryName: scmRepoName),
-                    jira(
-                        assignee: jiraAssignee,
-                        configName: jiraConfigName,
-                        issueQuery: jiraIssueQuery,
-                        projectKey: jiraProjectKey,
-                        projectName: jiraProjectName)
+                    //jira(
+                        //assignee: jiraAssignee,
+                        //configName: jiraConfigName,
+                        //issueQuery: jiraIssueQuery,
+                        //projectKey: jiraProjectKey,
+                        //projectName: jiraProjectName)
                     ]) {
                         sh 'io --stage io'
                     }
