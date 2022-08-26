@@ -6,14 +6,14 @@ import groovy.json.JsonSlurper
 def fileBranchName = 'master'
 
 // IO Environment
-def ioPOCId = 'iotoken'
+def ioPOCId = 'iotoken' //ID value from Jenkins credentials Manager + Config name under config server(to be consistent)
 def ioProjectName = 'hello-test'
 def ioWorkflowEngineVersion = '2022.7.0'
 def ioServerURL = "https://io08.codedx.synopsys.com"
 def ioRunAPI = "/api/ioiq/api/orchestration/runs/"
 
 // SCM - GitHub
-def gitHubPOCId = 'Github-token'
+def gitHubPOCId = 'Github-token' //ID value from Jenkins credentials Manager + Config name under config server (to be consistent)
 def gitHubOwner = 'sonbrothers'
 def scmBranch = fileBranchName
 def scmRepoName = 'insecure-bank'
@@ -37,7 +37,7 @@ def jiraProjectKey = 'IRMOB'
 def jiraProjectName = 'IRMOB'
 
 // Code Dx Configuration
-def codeDxConfigName = 'IO-CodeDX-Secret'
+def codeDxConfigName = 'IO-CodeDX-Secret' //ID value from Jenkins credentials Manager + Config name under config server (to be consistent)
 def codeDxProjectId = '2'
 def codeDxInstnceURL = 'https://poc08.codedx.synopsys.com/codedx'
 def codeDxProjectAPI = '/api/projects/'
