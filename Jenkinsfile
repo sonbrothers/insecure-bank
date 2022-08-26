@@ -7,7 +7,7 @@ def fileBranchName = 'master'
 
 // IO Environment
 def ioPOCId = 'iotoken'
-def ioProjectName = 'Sam-IO-POC-insecure-bank'
+def ioProjectName = 'hello-test'
 def ioWorkflowEngineVersion = '2022.7.0'
 def ioServerURL = "https://io08.codedx.synopsys.com"
 def ioRunAPI = "/api/ioiq/api/orchestration/runs/"
