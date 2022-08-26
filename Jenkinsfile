@@ -2,8 +2,8 @@ import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
 // File Enviroment
-//def fileProjectName = 'insecure-bank'
-//def fileBranchName = 'master'
+def fileProjectName = 'insecure-bank'
+def fileBranchName = 'master'
 
 // IO Environment
 def ioPOCId = 'IO-08-POC'
