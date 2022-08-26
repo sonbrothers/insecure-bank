@@ -2,11 +2,11 @@ import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
 // File Enviroment
-def fileProjectName = 'Sam-IO-POC-insecure-bank'
+//def fileProjectName = 'insecure-bank'
 def fileBranchName = 'master'
 
 // IO Environment
-def ioPOCId = 'IO-08-POC'
+def ioPOCId = 'IO-08-POC' //IO Token in Jenkins
 def ioProjectName = 'Sam-IO-POC-insecure-bank'
 def ioWorkflowEngineVersion = '2022.7.0'
 def ioServerURL = "https://io08.codedx.synopsys.com"
@@ -21,20 +21,20 @@ def scmRevisionDate = ''
 
 // AST - Polaris
 def polarisConfigName = 'Polaris-Secret'
-def polarisProjectName = fileProjectName
+def polarisProjectName = 'my-insecure-bank'
 def polarisBranchName = fileBranchName
 
 // AST - Black Duck
 def blackDuckPOCId = 'Blackduck-Token'
-def blackDuckProjectName = fileProjectName
+def blackDuckProjectName = 'Demo_SD'
 def blackDuckProjectVersion = fileBranchName
 
 // BTS Configuration
-def jiraAssignee = 'johnd'
-def jiraConfigName = 'jira-poc10'
-def jiraIssueQuery = 'resolution=Unresolved'
-def jiraProjectKey = 'IRMOB'
-def jiraProjectName = 'IRMOB'
+//def jiraAssignee = 'johnd'
+//def jiraConfigName = 'jira-poc10'
+//def jiraIssueQuery = 'resolution=Unresolved'
+//def jiraProjectKey = 'IRMOB'
+//def jiraProjectName = 'IRMOB'
 
 // Code Dx Configuration
 def codeDxConfigName = 'IO-CodeDX-Secret'
