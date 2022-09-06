@@ -13,7 +13,7 @@ def ioServerURL = "https://io08.codedx.synopsys.com"
 def ioRunAPI = "/api/ioiq/api/orchestration/runs/"
 
 // SCM - GitHub
-def gitHubPOCId = 'Github-token' //ID value from Jenkins credentials Manager + Config name under config server (to be consistent)
+def gitHubPOCId = 'io-poc-1' //ID value from Jenkins credentials Manager + Config name under config server (to be consistent)
 def gitHubOwner = 'sonbrothers'
 def scmBranch = fileBranchName
 def scmRepoName = 'insecure-bank'
