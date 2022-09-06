@@ -37,7 +37,7 @@ def jiraProjectKey = 'IRMOB'
 def jiraProjectName = 'IRMOB'
 
 // Code Dx Configuration
-def codeDxConfigName = 'SIG-CodeDx' //ID value from Jenkins credentials Manager + Config name under config server (to be consistent)
+def codeDxConfigName = 'rahul-codedx-api-key' //ID value from Jenkins credentials Manager + Config name under config server (to be consistent)
 def codeDxProjectId = '30'
 def codeDxInstnceURL = 'http://23.99.131.170:8080/codedx'
 def codeDxProjectAPI = '/api/projects/'
