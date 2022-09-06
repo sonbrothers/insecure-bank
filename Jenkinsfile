@@ -6,10 +6,10 @@ import groovy.json.JsonSlurper
 def fileBranchName = 'master'
 
 // IO Environment
-def ioPOCId = 'iotoken' //ID value from Jenkins credentials Manager + Config name under config server(to be consistent)
-def ioProjectName = 'hello-test'
+def ioPOCId = 'IOToken' //ID value from Jenkins credentials Manager + Config name under config server(to be consistent)
+def ioProjectName = 'insecure-bank'
 def ioWorkflowEngineVersion = '2022.7.0'
-def ioServerURL = "https://io08.codedx.synopsys.com"
+def ioServerURL = "http://23.99.131.170/"
 def ioRunAPI = "/api/ioiq/api/orchestration/runs/"
 
 // SCM - GitHub
