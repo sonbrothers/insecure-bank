@@ -20,12 +20,12 @@ def scmRepoName = 'insecure-bank'
 def scmRevisionDate = ''
 
 // AST - Polaris
-def polarisConfigName = 'Polaris-Secret'
+def polarisConfigName = 'Polaris-Sam-poc'
 def polarisProjectName = 'my-insecure-bank'
 def polarisBranchName = fileBranchName
 
 // AST - Black Duck
-def blackDuckPOCId = 'Blackduck-Token'
+def blackDuckPOCId = 'Sam-poc'
 def blackDuckProjectName = 'Demo_SD'
 def blackDuckProjectVersion = fileBranchName
 
